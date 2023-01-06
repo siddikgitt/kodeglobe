@@ -8,10 +8,7 @@ Front-End :
 * Material UI
 
 Backe-End :
-* NodeJS
-* MongoDB
-* Express js
-* Mongoose
+* Firebase
 
 URL: 
 https://kodeglobe-one.vercel.app/
