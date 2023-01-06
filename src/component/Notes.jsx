@@ -24,8 +24,12 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { getNotes } from "../store/user/user.actions";
+import EditModal from "./EditModal";
 
 const Notes = () => {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+
   const [search, setSearch] = useState("");
   const db = getFirestore();
   const arr = useSelector((store) => store.users.notes);
@@ -40,11 +44,11 @@ const Notes = () => {
     alert("Note Deleted Successfully");
   };
 
-  const editNote = async (id) => {
+  const editNote = async (id, title, description) => {
     const docRef = doc(db, email, id);
     let data = {
-      title: "title",
-      description: "description",
+      title: title,
+      description: description,
     };
     const res = await updateDoc(docRef, data).then(() => {
       dispatch(getNotes(email));
@@ -58,12 +62,11 @@ const Notes = () => {
 
   return (
     <div>
-      
       <Box
         style={{
           width: "50%",
-          marginTop: "111px",
           margin: "auto",
+          marginTop: "111px",
           marginBottom: "25px",
           display: "flex",
           gap: 5,
@@ -109,7 +112,7 @@ const Notes = () => {
                     marginTop: "7px",
                   }}
                 >
-                  <Button
+                  {/* <Button
                     onClick={() => editNote(el.id)}
                     variant="contained"
                     style={{
@@ -117,7 +120,8 @@ const Notes = () => {
                     }}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
+                  <EditModal initTitle={el.title} initDescription={el.description} id={el.id} handleEdit={editNote}/>
                   <Button
                     variant="contained"
                     style={{
