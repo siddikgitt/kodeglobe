@@ -14,9 +14,17 @@ const submitData = {
 const Login = () => {
   const token = useSelector((store) => store.users.accessToken);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (token != "") {
+      navigate("/notes");
+    }
+
+  }, [])
+
   if (token != "") {
     navigate("/notes");
   }
+  
   const [data, setData] = useState(submitData);
   const auth = getAuth();
   const dispatch = useDispatch();

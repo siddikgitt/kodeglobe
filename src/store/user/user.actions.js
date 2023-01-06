@@ -21,15 +21,13 @@ export const handleLogin = (email, password) => (dispatch) => {
     });
 };
 
-export const getNotes = () => (dispatch) => {
-  const email = useSelector((store) => store.users.email);
-  const collectionRef = collection(database, email);
-  let temp = [];
-  getDocs(collectionRef).then((res) => {
-    res.docs.map((el) => {
-      temp.push({ ...el.data(), id: el.id });
+export const getNotes = (email) => (dispatch) => {
+    const collectionRef = collection(database, email);
+    let temp = [];
+    getDocs(collectionRef).then((res) => {
+        res.docs.map((el) => {
+        temp.push({ ...el.data(), id: el.id });
     });
+    dispatch({ type: GET_NOTE, payload: temp });
   });
-  console.log(temp);
-  dispatch({ type: GET_NOTE, payload: temp });
 };

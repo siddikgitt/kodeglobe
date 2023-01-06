@@ -12,17 +12,47 @@ import {
 import React, { useEffect } from "react";
 import NoteModal from "./NoteModal";
 import { app, database } from "../firebaseConfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { getNotes } from "../store/user/user.actions";
 
 const Notes = () => {
+  const db = getFirestore();
   const arr = useSelector((store) => store.users.notes);
-  console.log(arr);
+  const email = useSelector((store) => store.users.email);
+  const dispatch = useDispatch();
+  // console.log(arr);
+
+  const deleteNote = async (id) => {
+    const res = await deleteDoc(doc(db, email, id)).then(() => {
+      dispatch(getNotes(email));
+    });
+    alert("Note Deleted Successfully");
+  };
+
+  const editNote = async (id) => {
+    const docRef = doc(db, email, id)
+    let data = {
+      title: "title",
+      description: "description"
+    }
+    const res =  await updateDoc(docRef, data).then(() => {
+      dispatch(getNotes(email));
+    });
+    alert("Note Edited Successfully");
+  };
 
   useEffect(() => {
-    getNotes();
+    dispatch(getNotes(email));
   }, []);
 
   return (
@@ -46,7 +76,7 @@ const Notes = () => {
       <Box style={{ width: "50%", margin: "auto", marginBottom: "50px" }}>
         {arr?.map((el) => (
           <Card
-          key={el.id}
+            key={el.id}
             style={{
               border: "1px solid #2852f1",
               marginBottom: "20px",
@@ -66,6 +96,7 @@ const Notes = () => {
                 }}
               >
                 <Button
+                onClick={() => editNote(el.id)}
                   variant="contained"
                   style={{
                     fontSize: "11px",
@@ -79,6 +110,7 @@ const Notes = () => {
                     backgroundColor: "red",
                     fontSize: "11px",
                   }}
+                  onClick={() => deleteNote(el.id)}
                 >
                   Delete
                 </Button>

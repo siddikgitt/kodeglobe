@@ -55,7 +55,7 @@ const NoteModal = () => {
       description: data.description,
     })
       .then(() => {
-        getNotes();
+        dispatch(getNotes(email));
         alert("Note Added Succussfully");
         handleClose();
       })

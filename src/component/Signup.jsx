@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { app } from "../firebaseConfig";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const submitData = {
   email: "",
@@ -14,9 +15,12 @@ const Signup = () => {
   const auth = getAuth();
   const navigate = useNavigate();
   const token = useSelector((store) => store.users.accessToken);
-  if (token != "") {
-    navigate("/notes");
-  }
+  useEffect(() => {
+    if (token != "") {
+      navigate("/notes");
+    }
+
+  }, [])
 
   const [data, setData] = useState(submitData);
 
