@@ -1,15 +1,21 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import { Avatar, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Avatar, Button, List, ListItem, ListItemText, Typography } from "@mui/material";
 import logo from "../Asset/logo.png";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { handleLogout } from "../store/user/user.actions";
 
 const Navbar = () => {
+  const email = useSelector((store) => store.users.email);
+
   const [mobileDisplay, setMobileDisplay] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   return (
     <div>
       <Box
@@ -44,6 +50,8 @@ const Navbar = () => {
             gap: "1rem",
           }}
         >
+          {email == "" ? 
+          <Box sx={{display: "flex", gap: "1rem"}}>
           <Typography
           onClick={() => navigate("/")}
             sx={{ ":hover": { color: "#2852f1", cursor: "pointer" } }}
@@ -57,7 +65,10 @@ const Navbar = () => {
             variant="h6"
           >
             Signup
-          </Typography>
+          </Typography> 
+          </Box>
+          : <Button onClick={() => dispatch(handleLogout())} variant="outlined">Logout</Button>
+        } 
           <Typography
            onClick={() => navigate("/notes")}
             sx={{

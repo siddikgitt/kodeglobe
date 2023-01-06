@@ -26,6 +26,7 @@ import { useState } from "react";
 import { getNotes } from "../store/user/user.actions";
 
 const Notes = () => {
+  const [search, setSearch] = useState("");
   const db = getFirestore();
   const arr = useSelector((store) => store.users.notes);
   const email = useSelector((store) => store.users.email);
@@ -40,12 +41,12 @@ const Notes = () => {
   };
 
   const editNote = async (id) => {
-    const docRef = doc(db, email, id)
+    const docRef = doc(db, email, id);
     let data = {
       title: "title",
-      description: "description"
-    }
-    const res =  await updateDoc(docRef, data).then(() => {
+      description: "description",
+    };
+    const res = await updateDoc(docRef, data).then(() => {
       dispatch(getNotes(email));
     });
     alert("Note Edited Successfully");
@@ -57,67 +58,80 @@ const Notes = () => {
 
   return (
     <div>
+      
       <Box
         style={{
           width: "50%",
-          margin: "auto",
           marginTop: "111px",
+          margin: "auto",
           marginBottom: "25px",
           display: "flex",
           gap: 5,
         }}
       >
-        <TextField sx={{ width: "90%" }} placeholder="Search Here" />
-        <Button variant="contained">Search</Button>
+        <TextField onChange={(e) => setSearch(e.target.value)} sx={{ width: "100%" }} placeholder="Search Here" />
       </Box>
 
       <NoteModal />
 
       <Box style={{ width: "50%", margin: "auto", marginBottom: "50px" }}>
-        {arr?.map((el) => (
-          <Card
-            key={el.id}
-            style={{
-              border: "1px solid #2852f1",
-              marginBottom: "20px",
-            }}
-          >
-            <CardContent>
-              <Typography variant="h5">{el.title}</Typography>
-              <Typography variant="h6" sx={{ fontSize: 14, marginTop: "7px" }}>
-                {el.description}
-              </Typography>
-              <Box
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  alignItems: "center",
-                  marginTop: "7px",
-                }}
-              >
-                <Button
-                onClick={() => editNote(el.id)}
-                  variant="contained"
+        {arr
+          ?.filter((ele) => {
+            if (search === "") {
+              return ele;
+            } else if (
+              ele.description.toLowerCase().includes(search.toLowerCase())
+            ) {
+              return ele;
+            }
+          })
+          .map((el) => (
+            <Card
+              key={el.id}
+              style={{
+                border: "1px solid #2852f1",
+                marginBottom: "20px",
+              }}
+            >
+              <CardContent>
+                <Typography variant="h5">{el.title}</Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ fontSize: 14, marginTop: "7px" }}
+                >
+                  {el.description}
+                </Typography>
+                <Box
                   style={{
-                    fontSize: "11px",
+                    display: "flex",
+                    gap: 10,
+                    alignItems: "center",
+                    marginTop: "7px",
                   }}
                 >
-                  Edit
-                </Button>
-                <Button
-                  variant="contained"
-                  style={{
-                    backgroundColor: "red",
-                    fontSize: "11px",
-                  }}
-                  onClick={() => deleteNote(el.id)}
-                >
-                  Delete
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+                  <Button
+                    onClick={() => editNote(el.id)}
+                    variant="contained"
+                    style={{
+                      fontSize: "11px",
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    style={{
+                      backgroundColor: "red",
+                      fontSize: "11px",
+                    }}
+                    onClick={() => deleteNote(el.id)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
       </Box>
     </div>
   );

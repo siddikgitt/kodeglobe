@@ -1,6 +1,6 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useSelector } from "react-redux";
-import { GET_NOTE, USER_LOGIN } from "./user.actionType";
+import { GET_NOTE, USER_LOGIN, USER_LOGOUT } from "./user.actionType";
 import { app, database } from "../../firebaseConfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 const auth = getAuth();
@@ -31,3 +31,7 @@ export const getNotes = (email) => (dispatch) => {
     dispatch({ type: GET_NOTE, payload: temp });
   });
 };
+
+export const handleLogout = () => (dispatch) => {
+    dispatch({type: USER_LOGOUT})
+}
