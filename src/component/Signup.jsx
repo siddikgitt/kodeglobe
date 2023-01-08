@@ -6,6 +6,9 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const submitData = {
   email: "",
   password: "",
@@ -14,9 +17,10 @@ const submitData = {
 const Signup = () => {
   const auth = getAuth();
   const navigate = useNavigate();
-  const token = useSelector((store) => store.users.accessToken);
+  // const token = useSelector((store) => store.users.accessToken);
+  const token = localStorage.getItem("kodeglobe");
   useEffect(() => {
-    if (token != "") {
+    if (token) {
       navigate("/notes");
     }
 
@@ -38,13 +42,20 @@ const Signup = () => {
       .then((res) => {
         const user = res.user;
         console.log(user);
-        alert("Signup Successful")
-        navigate("/");
+        toast.success("Signup Successful", {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
+        setTimeout(() => {
+          navigate("/");
+          
+        }, 2000);
       })
       .catch((error) => {
         const errorCode = error.code;
         console.log(errorCode, error.message);
-        alert(error.message);
+        toast.error(error.message, {
+          position: toast.POSITION.BOTTOM_CENTER,
+        });
       });
 
   };
@@ -81,6 +92,8 @@ const Signup = () => {
             Signup
           </Button>
         </FormControl>
+        <ToastContainer autoClose={2000} hideProgressBar={true}/>
+
       </form>
     </div>
   );

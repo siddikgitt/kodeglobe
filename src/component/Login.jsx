@@ -5,6 +5,8 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { handleLogin } from "../store/user/user.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const submitData = {
   email: "",
@@ -18,13 +20,15 @@ const Login = () => {
     if (token != "") {
       navigate("/notes");
     }
-
-  }, [])
+  }, []);
 
   if (token != "") {
-    navigate("/notes");
+    setTimeout(() => {
+      navigate("/notes");
+      
+    }, 2000);
   }
-  
+
   const [data, setData] = useState(submitData);
   const auth = getAuth();
   const dispatch = useDispatch();
@@ -75,6 +79,7 @@ const Login = () => {
             Login
           </Button>
         </FormControl>
+        <ToastContainer autoClose={2000} hideProgressBar={true}/>
       </form>
     </div>
   );

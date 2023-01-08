@@ -27,7 +27,6 @@ const style = {
 const EditModal = ({ initTitle, initDescription, id, handleEdit }) => {
   const email = useSelector((store) => store.users.email);
 
-  const [data, setData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);

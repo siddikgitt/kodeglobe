@@ -25,8 +25,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { getNotes } from "../store/user/user.actions";
 import EditModal from "./EditModal";
+import { useNavigate } from "react-router-dom";
+import Toast from "./Toast";
+import { ToastContainer } from "react-toastify";
 
 const Notes = () => {
+
+  const token = useSelector((store) => store.users.accessToken);
+  const navigate = useNavigate();
+
+  if (token == "") {
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  }
+
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
 
@@ -35,14 +48,36 @@ const Notes = () => {
   const arr = useSelector((store) => store.users.notes);
   const email = useSelector((store) => store.users.email);
   const dispatch = useDispatch();
-  // console.log(arr);
+
+  // ------------ TOAST ------------
+  const [openToast, setOpenToast] = React.useState(false);
+  const [msg, setMsg] = useState("");
+
+  const handleClickToast = () => {
+    setOpenToast(true);
+  };
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
+  };
+  
+  // ------------ DELETE NOTE ------------
 
   const deleteNote = async (id) => {
     const res = await deleteDoc(doc(db, email, id)).then(() => {
       dispatch(getNotes(email));
     });
-    alert("Note Deleted Successfully");
+    // alert("Note Deleted Successfully");
+    setMsg("Note Deleted Successfully")
+    setOpenToast(true);
+
   };
+
+  // ------------ EDIT NOTE ------------
 
   const editNote = async (id, title, description) => {
     const docRef = doc(db, email, id);
@@ -53,7 +88,10 @@ const Notes = () => {
     const res = await updateDoc(docRef, data).then(() => {
       dispatch(getNotes(email));
     });
-    alert("Note Edited Successfully");
+    // alert("Note Edited Successfully");
+    setMsg("Note Edited Successfully")
+    setOpenToast(true);
+
   };
 
   useEffect(() => {
@@ -74,8 +112,6 @@ const Notes = () => {
       >
         <TextField onChange={(e) => setSearch(e.target.value)} sx={{ width: "100%" }} placeholder="Search Here" />
       </Box>
-
-      <NoteModal />
 
       <Box style={{ width: "50%", margin: "auto", marginBottom: "50px" }}>
         {arr
@@ -112,15 +148,6 @@ const Notes = () => {
                     marginTop: "7px",
                   }}
                 >
-                  {/* <Button
-                    onClick={() => editNote(el.id)}
-                    variant="contained"
-                    style={{
-                      fontSize: "11px",
-                    }}
-                  >
-                    Edit
-                  </Button> */}
                   <EditModal initTitle={el.title} initDescription={el.description} id={el.id} handleEdit={editNote}/>
                   <Button
                     variant="contained"
@@ -137,6 +164,9 @@ const Notes = () => {
             </Card>
           ))}
       </Box>
+      <Toast msg={msg} handleCloseToast={handleCloseToast} openToast={openToast}/>
+      <ToastContainer />
+      
     </div>
   );
 };

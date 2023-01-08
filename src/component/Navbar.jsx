@@ -1,6 +1,13 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import { Avatar, Button, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import logo from "../Asset/logo.png";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -8,9 +15,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "../store/user/user.actions";
+import NoteModal from "./NoteModal";
 
 const Navbar = () => {
-  const email = useSelector((store) => store.users.email);
+  const token = useSelector((store) => store.users.accessToken);
 
   const [mobileDisplay, setMobileDisplay] = useState(false);
   const navigate = useNavigate();
@@ -32,16 +40,27 @@ const Navbar = () => {
           alignItems: "center",
         }}
       >
-        <Box  sx={{ ":hover": { cursor: "pointer" } }} onClick={() => navigate("/")} style={{ display: "flex", gap: 5, alignItems: "center" }}>
+        <Box
+          sx={{ ":hover": { cursor: "pointer" } }}
+          onClick={() => navigate("/")}
+          style={{ display: "flex", gap: 5, alignItems: "center" }}
+        >
           <Avatar alt="Logo" src={logo} />
           <Typography variant="h5">KodeGlobe</Typography>
         </Box>
         <Box
           sx={{
-            width: "20%",
+            // width: "20%",
+            width: {
+              xs: "45%",
+              sm: "25%",
+              md: "20%",
+              lg: "15%",
+              xl: "10%",
+            },
             display: {
-              xs: "none",
-              sm: "none",
+              xs: "flex",
+              sm: "flex",
               md: "flex",
               lg: "flex",
               xl: "flex",
@@ -50,38 +69,41 @@ const Navbar = () => {
             gap: "1rem",
           }}
         >
-          {email == "" ? 
-          <Box sx={{display: "flex", gap: "1rem"}}>
-          <Typography
-          onClick={() => navigate("/")}
-            sx={{ ":hover": { color: "#2852f1", cursor: "pointer" } }}
-            variant="h6"
-          >
-            Login
-          </Typography>
-          <Typography
-           onClick={() => navigate("/signup")}
-            sx={{ ":hover": { color: "#2852f1", cursor: "pointer" } }}
-            variant="h6"
-          >
-            Signup
-          </Typography> 
-          </Box>
-          : <Button onClick={() => dispatch(handleLogout())} variant="outlined">Logout</Button>
-        } 
-          <Typography
-           onClick={() => navigate("/notes")}
-            sx={{
-              ":hover": { color: "#2852f1", cursor: "pointer" },
-              fontWeight: "medium",
-            }}
-            variant="h6"
-          >
-            Notes
-          </Typography>
+          {token == "" ? (
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Typography
+                onClick={() => navigate("/")}
+                sx={{ ":hover": { color: "#2852f1", cursor: "pointer" } }}
+                variant="h6"
+              >
+                Login
+              </Typography>
+              <Typography
+                onClick={() => navigate("/signup")}
+                sx={{ ":hover": { color: "#2852f1", cursor: "pointer" } }}
+                variant="h6"
+              >
+                Signup
+              </Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", gap: "0.5rem" }}>
+              <Button
+              sx={{padding: 0}}
+                onClick={() => {
+                  dispatch(handleLogout());
+                  navigate("/");
+                }}
+                variant="outlined"
+              >
+                Logout
+              </Button>
+              <NoteModal />
+            </Box>
+          )}
         </Box>
 
-        <Box
+        {/* <Box
           sx={{
             width: "15%",
             display: {
@@ -96,21 +118,50 @@ const Navbar = () => {
           }}
           onClick={() => setMobileDisplay(!mobileDisplay)}
         >
-          {mobileDisplay ? <CloseRoundedIcon /> : <MenuRoundedIcon /> }
-        </Box>
+          {mobileDisplay ? <CloseRoundedIcon /> : <MenuRoundedIcon />}
+        </Box> */}
       </Box>
       {mobileDisplay && (
-        <Box width={"fit-content"} margin={"auto"} mt={"90px"} height="fit-content">
-          <List margin="auto" width="fit-content" >
-            <ListItem> 
-              <ListItemText  onClick={() => {navigate("/"); setMobileDisplay(!mobileDisplay)}} primary="Login" />
-            </ListItem>
-            <ListItem>
-              <ListItemText  onClick={() => {navigate("/signup"); setMobileDisplay(!mobileDisplay)}} primary="Signup" />
-            </ListItem>
-            <ListItem>
-              <ListItemText  onClick={() => {navigate("/notes"); setMobileDisplay(!mobileDisplay)}} primary="Notes" />
-            </ListItem>
+        <Box
+          width={"fit-content"}
+          margin={"auto"}
+          mt={"90px"}
+          height="fit-content"
+        >
+          <List margin="auto" width="fit-content">
+            {token == "" ? (
+              <Box>
+                <ListItem>
+                  <ListItemText
+                    onClick={() => {
+                      navigate("/");
+                      setMobileDisplay(!mobileDisplay);
+                    }}
+                    primary="Login"
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText
+                    onClick={() => {
+                      navigate("/signup");
+                      setMobileDisplay(!mobileDisplay);
+                    }}
+                    primary="Signup"
+                  />
+                </ListItem>
+              </Box>
+            ) : (
+              <ListItem>
+                <ListItemText
+                  onClick={() => {
+                    dispatch(handleLogout());
+                    navigate("/");
+                    setMobileDisplay(!mobileDisplay);
+                  }}
+                  primary="Logout"
+                />
+              </ListItem>
+            )}
           </List>
         </Box>
       )}

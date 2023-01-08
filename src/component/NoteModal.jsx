@@ -11,6 +11,7 @@ import { app, database } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { getNotes } from "../store/user/user.actions";
+import Toast from "./Toast";
 
 const style = {
   position: "absolute",
@@ -39,6 +40,20 @@ const NoteModal = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const [openToast, setOpenToast] = React.useState(false);
+
+  const handleClickToast = () => {
+    setOpenToast(true);
+  };
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
+  };
+
   const handleChange = (e) => {
     const { name: key, value } = e.target;
     setData({
@@ -49,14 +64,14 @@ const NoteModal = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(data);
     addDoc(collectionRef, {
       title: data.title,
       description: data.description,
     })
       .then(() => {
         dispatch(getNotes(email));
-        alert("Note Added Succussfully");
+        // alert("Note Added Succussfully");
+        setOpenToast(true);
         handleClose();
       })
       .catch((err) => console.log(err.message));
@@ -65,17 +80,18 @@ const NoteModal = () => {
   return (
     <div>
       <Button
-        style={{
-          width: "50%",
+        sx={{
+          // width: "50%",
           margin: "auto",
-          marginBottom: "50px",
+          // marginBottom: "50px",
           display: "flex",
           gap: 5,
+          padding: 0.5
         }}
         variant="contained"
         onClick={handleOpen}
       >
-        Add New Note
+        Add Note
       </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -128,6 +144,7 @@ const NoteModal = () => {
           </Box>
         </Fade>
       </Modal>
+      <Toast msg={"Added New Note"} handleCloseToast={handleCloseToast} openToast={openToast}/>
     </div>
   );
 };
